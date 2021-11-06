@@ -1,7 +1,130 @@
+<!DOCTYPE html>
+<html>
+   <head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>周六几点下班</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	   <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+   </head>
+   <body>
+	   <div class="container">
+	     <div class="page-header">
+	       <h1>周六几点下班 <small>Beta1</small></h1>
+	     </div>
+		<div class="panel panel panel-info">
+		  <div class="panel-heading">懒得做UI了 8:30最早时间哈</div>
+		  <div class="panel-body">
+		   <div class="input-group">
+		              <span class="input-group-addon">几点来的</span>
+		              <input id="shijian" type="text" class="form-control" placeholder="格式：10:00 英文的冒号">  <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" onclick="jisuan()">算一下</button>
+                    </span>
+		          </div>
+				  
+		  </div>
+		</div>
 
+			 
+<div class="panel panel panel-primary">
+		  <div class="panel-heading">展示结果</div>
+		  <div class="panel-body">
+			<div style="font-size: 19px;" id="result">输入几点来上班的 我就告诉你结果</div>
+		  </div>
+		</div>
 
-<head>
-
-<!-- 以下方式定时转到其他页面 -->
-<meta http-equiv="refresh" content="1;url=http://121.5.238.33:8081/"> 
-</head>
+	
+		 
+		 
+	   </div>
+	  <script>
+		function setInfo(info){
+			document.getElementById("result").innerText=document.getElementById("result").innerText+"\n"+info
+		}
+		
+		function fun (start,end) {
+		    let startTime = new Date("2021-01-01 "+start); // 开始时间
+		    let endTime = new Date("2021-01-01 "+end); // 结束时间
+		    let usedTime = endTime - startTime; // 相差的毫秒数
+		    let days = Math.floor(usedTime / (24 * 3600 * 1000)); // 计算出天数
+		    let leavel = usedTime % (24 * 3600 * 1000); // 计算天数后剩余的时间
+		    let hours = Math.floor(leavel / (3600 * 1000)); // 计算剩余的小时数
+		    let leavel2 = leavel % (3600 * 1000); // 计算剩余小时后剩余的毫秒数
+		    let minutes = Math.floor(leavel2 / (60 * 1000)); // 计算剩余的分钟数
+			return{
+			      h:hours,
+			      m:minutes
+			    }
+		}
+		
+		Date.prototype.format = function(format)
+		{
+		 var o = {
+		 "M+" : this.getMonth()+1, 
+		 "d+" : this.getDate(),   
+		 "h+" : this.getHours(),  
+		 "m+" : this.getMinutes(), 
+		 "s+" : this.getSeconds(), 
+		 "q+" : Math.floor((this.getMonth()+3)/3),  
+		 "S" : this.getMilliseconds() 
+		 }
+		 if(/(y+)/.test(format)) format=format.replace(RegExp.$1,
+		 (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+		 for(var k in o)if(new RegExp("("+ k +")").test(format))
+		 format = format.replace(RegExp.$1,
+		 RegExp.$1.length==1 ? o[k] :
+		 ("00"+ o[k]).substr((""+ o[k]).length));
+		 return format;
+		}
+		
+		function ph(sj){
+			let hhh = parseInt(sj/60)
+			let mmm = sj%60
+			return hhh+"小时"+mmm+"分钟"
+		}
+		
+		function jisuan(){
+			document.getElementById("result").innerText=""
+			let shijian = document.getElementById("shijian").value
+			let shierdian = fun(shijian,"12:00")
+			let sumh=0;
+			let summ=0;
+			let total =0;//总分钟数 需要满480
+			setInfo("你是周六"+shijian+"来上班的")
+			if(shierdian.h>=0){
+				sumh+=shierdian.h
+				summ+=shierdian.m
+				if(summ==60){
+					summ-=60
+					sumh+=1
+				}
+				total=sumh*60+summ;
+				setInfo("上到中午12点是："+shierdian.h+"小时"+shierdian.m+"分钟\n接下来吃饭休息\n")
+			}
+		
+			let liudian = fun("13:30","18:00")	
+			sumh+=liudian.h
+			summ+=liudian.m
+			if(summ==60){
+				summ-=60
+				sumh+=1
+			}
+			total=sumh*60+summ;
+			
+			setInfo("下午13:30开始算时间\n你又上到18:00 时长多了："+liudian.h+"小时"+liudian.m+"分钟\n目前累计时长："+ph(total))
+			
+			if(total>=480)
+			{
+				setInfo("\n\n恭喜你，可以下班啦！！")
+			}else{
+				let offset=(480-total);
+				setInfo("接下来吃饭散步\n\n下午18:40开始算时间\n你还差"+ph(offset))
+				var date = new Date("2021-01-01 18:40");
+				date.setMinutes(date.getMinutes()+offset);
+				setInfo("最终下班时间："+date.format('hh:mm'))
+			}
+				
+		}
+		
+	  </script>
+   </body>
+</html>
